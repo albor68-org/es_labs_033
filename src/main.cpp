@@ -26,11 +26,56 @@ int main () {
 
     usart_enable(USART2);
 
+    usart_send_blocking(USART2, '>');
+    usart_send_blocking(USART2, '\r');
+    usart_send_blocking(USART2, '\n');
+
 
     while (true) {
         gpio_toggle(GPIOE, GPIO9);
+
         usart_send_blocking(USART2, 'H');
-        for (volatile uint32_t i = 0; i < 5'000'000; ++i);
+        usart_send_blocking(USART2, 'e');
+        usart_send_blocking(USART2, 'l');
+        usart_send_blocking(USART2, 'l');
+        usart_send_blocking(USART2, 'o');
+        usart_send_blocking(USART2, '!');
+        usart_send_blocking(USART2, '\r');
+        usart_send_blocking(USART2, '\n');
+
+        for (volatile uint32_t i = 0; i < 500'000; ++i);
     }
 
 }
+
+
+
+
+// Переключить светодиод, обозначая начало итерации
+// (уже есть в программе)
+
+
+// Ждать приема символа по УАПП,
+// принятый символ сохранить в подготовленной переменной
+
+
+// Отправить принятый символ обратно (в тот же УАПП)
+// (функцию уже использовали, надо чуть-чуть переделать)
+
+
+// Можно не добавлять цикл задержки, частота повторов определяется
+// ловкостью оператора ПК
+// (закомментировать?)
+
+
+
+
+
+
+
+
+
+
+
+
+
