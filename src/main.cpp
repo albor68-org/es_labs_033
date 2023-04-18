@@ -34,21 +34,13 @@ int main () {
 
     while(true) {
      gpio_toggle(GPIOE,GPIO9);
-     usart_send_blocking(USART2,'S');
-     for (volatile uint32_t i = 0; i < 10'000; ++i);
-     usart_send_blocking(USART2,'O');
-     for (volatile uint32_t i = 0; i < 10'000; ++i);
-     usart_send_blocking(USART2,'F');
-     for (volatile uint32_t i = 0; i < 10'000; ++i);
-     usart_send_blocking(USART2,'Y');
-     for (volatile uint32_t i = 0; i < 10'000; ++i);
-     usart_send_blocking(USART2,'A');
-     for (volatile uint32_t i = 0; i < 10'000; ++i);
-     usart_send_blocking(USART2,'!');
-     for (volatile uint32_t i = 0; i < 10'000; ++i);
-     usart_send_blocking(USART2,'\r');
-     usart_send_blocking(USART2,'\n');
-     for (volatile uint32_t i = 0; i < 1'000'000; ++i);
+     uint16_t data = usart_recv_blocking(USART2);
+
+
+
+     usart_send_blocking(USART2,data);
+
+   //  for (volatile uint32_t i = 0; i < 1'000'000; ++i);
 
 
     }
