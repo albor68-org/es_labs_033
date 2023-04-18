@@ -10,7 +10,15 @@ int main () {
 
     while (true) {
         gpio_use();
+
         usart_send_blocking(USART2,'H');
+        usart_send_blocking(USART2,'e');
+        usart_send_blocking(USART2,'l');
+        usart_send_blocking(USART2,'l');
+        usart_send_blocking(USART2,'o');
+        usart_send_blocking(USART2,'\r');
+        usart_send_blocking(USART2,'\n');
+
         for(volatile uint32_t i = 0; i < 5'000'00;i++);
     }
 }
@@ -37,7 +45,9 @@ void gpio_setup(){
     gpio_set_af(GPIOB,GPIO_AF7,GPIO3|GPIO4);
 
     usart_enable(USART2);
-
+    usart_send_blocking(USART2,'>');
+    usart_send_blocking(USART2,'\r');
+    usart_send_blocking(USART2,'\n');
 }
 void gpio_use (){
     gpio_toggle(GPIOE,GPIO10|GPIO14);
