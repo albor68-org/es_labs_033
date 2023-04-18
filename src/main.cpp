@@ -23,14 +23,12 @@ int main () {
     usart_send_blocking(USART2, '\n');
 while (true) {
   gpio_toggle(GPIOE, GPIO9 | GPIO11 /*| GPIO13 | GPIO15*/);
-  usart_send_blocking(USART2, 'H');
-  usart_send_blocking(USART2, 'e');
-  usart_send_blocking(USART2, 'l');
-  usart_send_blocking(USART2, 'l');
-  usart_send_blocking(USART2, '0');
-  usart_send_blocking(USART2, '!');
-  usart_send_blocking(USART2, '\r');
-  usart_send_blocking(USART2, '\n');
-  for(volatile uint32_t i=0; i<5'000'00; ++i);
+
+  uint16_t data = usart_recv_blocking(USART2);
+
+  usart_send_blocking(USART2, data);
+
+
+ // for(volatile uint32_t i=0; i<5'000'00; ++i);
   }
 }
