@@ -6,7 +6,7 @@ int main () {
 
     //Светодиод
     rcc_periph_clock_enable(RCC_GPIOE);
-    gpio_mode_setup(GPIOE, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO12);
+    gpio_mode_setup(GPIOE, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO8 | GPIO9 | GPIO10 | GPIO11 | GPIO12 | GPIO13 | GPIO14 | GPIO15);
 
     //УАПП
     rcc_periph_clock_enable(RCC_USART2);
@@ -24,12 +24,23 @@ int main () {
 
     usart_enable(USART2);
 
+    usart_send_blocking(USART2, '>');
+    usart_send_blocking(USART2, '\r');
+    usart_send_blocking(USART2, '\n');
+
     while (true)
     {
-        gpio_toggle(GPIOE, GPIO12);
+        gpio_toggle(GPIOE, GPIO8 | GPIO9 | GPIO10 | GPIO11 | GPIO12 | GPIO13 | GPIO14 | GPIO15);
         usart_send_blocking(USART2, 'H');
+        usart_send_blocking(USART2, 'e');
+        usart_send_blocking(USART2, 'l');
+        usart_send_blocking(USART2, 'l');
+        usart_send_blocking(USART2, 'o');
+        usart_send_blocking(USART2, '!');
+        usart_send_blocking(USART2, '\r');
+        usart_send_blocking(USART2, '\n');
+
         for (volatile uint32_t i=0; i<250'000; ++i);
 
     }
-
 }
