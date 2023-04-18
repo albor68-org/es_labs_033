@@ -20,14 +20,27 @@ int main () {
     usart_set_mode(USART2, USART_MODE_TX_RX);
 
     rcc_periph_clock_enable(RCC_GPIOB);
-    gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO3|GPIO4);
+    gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO3|GPIO4);
     gpio_set_af(GPIOB, GPIO_AF7, GPIO3|GPIO4);
     usart_enable(USART2);
 
+    usart_send_blocking(USART2, '>');
+    usart_send_blocking(USART2, '\r');
+    usart_send_blocking(USART2, '\n');
+
     while (true) {
         gpio_toggle(GPIOE, GPIO8|GPIO9|GPIO10|GPIO11|GPIO12|GPIO13|GPIO14|GPIO15);
+
         usart_send_blocking(USART2, 'H');
-        for(volatile uint32_t i = 0; i < 500'000; ++i);
+        usart_send_blocking(USART2, 'e');
+        usart_send_blocking(USART2, 'l');
+        usart_send_blocking(USART2, 'l');
+        usart_send_blocking(USART2, 'o');
+        usart_send_blocking(USART2, '!');
+        usart_send_blocking(USART2, '\r');
+        usart_send_blocking(USART2, '\n');
+
+        for(volatile uint32_t i = 0; i < 15'000; ++i);
     }
 
 }
