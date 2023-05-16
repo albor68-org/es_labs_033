@@ -18,6 +18,9 @@ int main () {
     timer_set_prescaler (TIM6, rcc_get_timer_clk_freq(TIM6) / CK_CNT_Hz - 1);
     timer_set_period(TIM6,BLINK_PERIOD_MS - 1);
 
+    nvic_enable_irq(NVIC_TIM6_DAC_IRQ);
+    timer_enable_irq(TIM6, TIM_DIER_UIE);
+
     //
     //
 
@@ -30,13 +33,16 @@ int main () {
     gpio_mode_setup(GPIOE, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO9);
 
     while(true) {
-        // Use timer
-        if (timer_get_flag(TIM6, TIM_SR_UIF) != 0){
-        gpio_toggle(GPIOE, GPIO9);
-        timer_clear_flag(TIM6, TIM_SR_UIF);
+
         }
-        }
-    }
+
+}
+
+void tim6_dac_isr (void) {
+    timer_clear_flag(TIM6, TIM_SR_UIF);
+    gpio_toggle(GPIOE,GPIO9);
+}
+
 
 
 
