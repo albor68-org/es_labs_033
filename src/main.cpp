@@ -18,8 +18,8 @@ int main () {
     timer_enable_counter(TIM6);
 
 
-    //timer_enable_irq(TIM6, TIM_DIER_UIE);
-    //nvic_enable_irq(NVIC_TIM6_DAC_IRQ);
+    timer_enable_irq(TIM6, TIM_DIER_UIE);
+    nvic_enable_irq(NVIC_TIM6_DAC_IRQ);
 
 
     //Настройка порта
@@ -28,13 +28,15 @@ int main () {
 
     while (true)
     {
-        if (timer_get_flag(TIM6, TIM_SR_UIF)!=0)
-        {
-            gpio_toggle(GPIOE, GPIO12);
-            timer_clear_flag(TIM6, TIM_SR_UIF);
-        }
     }
+}
 
+    //Обработчик прерывания
+    void tim6_dac_isr(void)
+    {
+        timer_clear_flag(TIM6, TIM_SR_UIF);
+        gpio_toggle(GPIOE, GPIO12);
+    }
 
 
 //    gpio_mode_setup(GPIOE, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO8 | GPIO9 | GPIO10 | GPIO11 | GPIO12 | GPIO13 | GPIO14 | GPIO15);
@@ -91,4 +93,4 @@ int main () {
 //        for (volatile uint32_t i=0; i<250'000; ++i);
 //
 //    }
-}
+
