@@ -1,50 +1,35 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
-#include <libopencm3/stm32/usart.h>
+#include <libopencm3/stm32/timer.h>
+
+#include <libopencm3/cm3/nvic.h>
+
+constexpr uint16_t BLINK_PERIOD_MS{1000};
+constexpr uint16_t CK_CNT_Hz{1000};
+
 
 
 
 int main () {
 
-    rcc_periph_clock_enable(RCC_GPIOE);
-    gpio_mode_setup(GPIOE, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO9);
+    rcc_periph_clock_enable(RCC_TIM6);
 
-    rcc_periph_clock_enable(RCC_USART2);
-    usart_set_baudrate(USART2,115200);
-    usart_set_databits(USART2, USART_PARITY_NONE);
-    usart_set_stopbits(USART2, USART_STOPBITS_1);
+   timer_set_prescaler(TIM1, rcc_get_timer_clk_freq(TIM6) / CK_CNT_Hz - 1 );
+   timer_set_period(TIM1, BLINK_PERIOD_MS - 1);
 
-    usart_set_flow_control(USART2, USART_FLOWCONTROL_NONE);
-    usart_set_mode(USART2, USART_MODE_TX_RX);
-
-    rcc_periph_clock_enable(RCC_GPIOB);
-    gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO3 |  GPIO4);
-    gpio_set_af(GPIOB, GPIO_AF7, GPIO3 | GPIO4);
-
-    usart_enable(USART2);
-
-    usart_send_blocking(USART2, '>');
-    usart_send_blocking(USART2, '\r');
-    usart_send_blocking(USART2, '\n');
+   timer_set_oc_value(TIM1, TIM_OC4,BLINK_PERIOD_MS / 2 );
+   timer_set_oc_mode(TIM1, TIM_OC4, TIM_OCM_TOGGLE);
+   timer_enable_oc_output(TIM1, TIM_OC4);
+   timer_enable_break_main_output(TIM1);
 
 
+   timer_enable_counter(TIM1);
 
 
+   rcc_periph_clock_enable(RCC_GPIOE);
+   gpio_mode_setup(GPIOE, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO14);
+   gpio_set_af(GPIOE, GPIO_AF2, GPIO14 );
 
-
-    while (true) {
-    gpio_toggle(GPIOE, GPIO9);
-    uint16_t data=usart_recv_blocking(USART2);
-
-
-
-
-    usart_send_blocking(USART2, data);
-
-
-   // for(volatile uint32_t i = 0; i < 1'000'000; ++i);
-
-
-    }
-
-}
+   while(true) {
+   }
+   }
