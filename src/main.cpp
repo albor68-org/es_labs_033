@@ -17,8 +17,8 @@ int main ()
     timer_set_prescaler(TIM1, rcc_get_timer_clk_freq(TIM1)/CK_CNT_Hz-1);
     timer_set_period(TIM1, BLINK_PERIOD_MS-1);
 
-    timer_set_oc_value(TIM1, TIM_OC4, BLINK_PERIOD_MS/2);
-    timer_set_oc_mode(TIM1, TIM_OC4, TIM_OCM_TOGGLE);
+    timer_set_oc_value(TIM1, TIM_OC4, BLINK_PERIOD_MS/8);
+    timer_set_oc_mode(TIM1, TIM_OC4, TIM_OCM_PWM1);
     timer_enable_oc_output(TIM1, TIM_OC4);
     timer_enable_break_main_output(TIM1);
 
