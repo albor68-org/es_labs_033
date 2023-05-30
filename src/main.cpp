@@ -3,14 +3,24 @@
 #include <libopencm3/stm32/timer.h>
 
 #include <libopencm3/cm3/nvic.h>
+#include <libopencm3/cm3/systick.h>
 
 
-constexpr uint16_t BLINK_PERIOD_MS{1000};
+constexpr uint16_t BLINK_PERIOD_MS{10};
 constexpr uint16_t CK_CNT_Hz{1000};
+
+uint32_t ticks{0};   //Счётчик тиков системного таймера (время в мс)
+
 //constexpr float DUTY_CYCLE{0.4f};
 
 int main ()
 {
+    // Настройка и запуск системного таймера
+    systick_set_frequency(CK_CNT_Hz, rcc_ahb_frequency);
+    systick_interrupt_enable();
+    systick_counter_enable();
+
+
 
     //Настройка таймера
     rcc_periph_clock_enable(RCC_TIM1);
@@ -37,9 +47,20 @@ int main ()
 
     while (true)
     {
+        uint32_t ptime = ticks % 40000;
+
+        if (ptime < 10000) timer_set_oc_value(TIM1, TIM_OC4, BLINK_PERIOD_MS/8);
+        else if (ptime < 20000) timer_set_oc_value(TIM1, TIM_OC4, BLINK_PERIOD_MS/2);
+        else if (ptime < 30000)timer_set_oc_value(TIM1, TIM_OC4, BLINK_PERIOD_MS/8 * 7);
+        else timer_set_oc_value(TIM1, TIM_OC4, BLINK_PERIOD_MS);
     }
 }
 
+// Обработка прерывания системного таймера
+void sys_tick_handler (void)
+{
+    ticks++;
+}
 
 
 //    gpio_mode_setup(GPIOE, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO8 | GPIO9 | GPIO10 | GPIO11 | GPIO12 | GPIO13 | GPIO14 | GPIO15);
