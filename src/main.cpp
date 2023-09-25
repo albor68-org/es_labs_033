@@ -1,72 +1,49 @@
-#include <libopencm3/stm32/gpio.h>
-#include <libopencm3/stm32/usart.h>
 #include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/timer.h>
+#include <libopencm3/cm3/nvic.h>
+#include <libopencm3/cm3/systick.h>
 
 
+constexpr uint16_t BLINK_PERIOD_MS{10};
+constexpr uint16_t CK_CNT_Hz{1000};
+uint32_t ticks {0};//Счетчик тиков системного таймера (время в мс)
 
-void gpio_setup();
 int main () {
-    gpio_setup ();
+
+    //Настройка системного таймера
+    systick_set_frequency(CK_CNT_Hz, rcc_ahb_frequency);
+    systick_interrupt_enable();
+    systick_counter_enable();
+
+    rcc_periph_clock_enable(RCC_TIM1);
+
+    timer_set_prescaler(TIM1,rcc_get_timer_clk_freq(TIM1) / CK_CNT_Hz - 1);
+
+    timer_set_period(TIM1, BLINK_PERIOD_MS - 1);
+
+    timer_set_oc_value(TIM1,TIM_OC4, BLINK_PERIOD_MS/2);
+    timer_set_oc_mode (TIM1, TIM_OC4, TIM_OCM_PWM1);
+    timer_enable_oc_output(TIM1,TIM_OC4);
+    timer_enable_break_main_output(TIM1);
+
+
+    timer_enable_counter(TIM1);
+
+    rcc_periph_clock_enable(RCC_GPIOE);
+
+    gpio_mode_setup(GPIOE,GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO14);
+    gpio_set_af(GPIOE,GPIO_AF2,GPIO14);
 
     while (true) {
-
-        uint16_t date = usart_recv_blocking(USART3);
-        gpio_clear(GPIOE, GPIO9|GPIO11|GPIO13|GPIO15);
-        switch((date == 'N')?1:(date =='S')?2:(date == 'E')?3:(date == 'W')?4 : 5){
-
-        case 1:
-            usart_send_blocking(USART3,date);
-            gpio_clear(GPIOE, GPIO11|GPIO13|GPIO15);
-            gpio_set(GPIOE, GPIO9);
-            break;
-        case 2:
-            usart_send_blocking(USART3,date);
-            gpio_clear(GPIOE, GPIO9|GPIO13|GPIO15);
-            gpio_set(GPIOE, GPIO11);
-            break;
-        case 3:
-            usart_send_blocking(USART3,date);
-            gpio_clear(GPIOE, GPIO9|GPIO11|GPIO15);
-            gpio_set(GPIOE, GPIO13);
-            break;
-        case 4:
-            usart_send_blocking(USART3,date);
-            gpio_clear(GPIOE, GPIO9|GPIO11|GPIO13);
-            gpio_set(GPIOE, GPIO15);
-            break;
-        case 5:
-            gpio_clear(GPIOE, GPIO9|GPIO11|GPIO13|GPIO15);
-            break;
-
-        }
-    }
+        uint32_t ptime = ticks % 40'000;
+        if(ptime<10'000) timer_set_oc_value(TIM1,TIM_OC4, BLINK_PERIOD_MS/8);
+            else if(ptime<20'000) timer_set_oc_value(TIM1,TIM_OC4, BLINK_PERIOD_MS/2);
+            else if(ptime<30'000) timer_set_oc_value(TIM1,TIM_OC4, BLINK_PERIOD_MS/8*7);
+            else timer_set_oc_value(TIM1,TIM_OC4, BLINK_PERIOD_MS);
 }
-
-void gpio_setup(){
-
-    //Светодиод
-    rcc_periph_clock_enable(RCC_GPIOE);
-    gpio_mode_setup(GPIOE,GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO9|GPIO11|GPIO13|GPIO15);
-
-    //УАПП
-    rcc_periph_clock_enable(RCC_USART3);
-
-    usart_set_baudrate(USART3,115200); //скорость передачи
-    usart_set_databits (USART3,8);
-    usart_set_parity(USART3,USART_PARITY_NONE);
-    usart_set_stopbits(USART3,USART_STOPBITS_1); //Стоп-БИТ
-
-    usart_set_flow_control(USART3, USART_FLOWCONTROL_NONE);
-    usart_set_mode(USART3,USART_MODE_TX_RX);
-
-    //Контакты для УАПП
-    rcc_periph_clock_enable(RCC_GPIOB);
-    gpio_mode_setup(GPIOB,GPIO_MODE_AF,GPIO_PUPD_NONE, GPIO10|GPIO11);
-    gpio_set_af(GPIOB,GPIO_AF7,GPIO10|GPIO11);
-
-    usart_enable(USART3);
-    usart_send_blocking(USART3,'>');
-    usart_send_blocking(USART3,'\r');
-    usart_send_blocking(USART3,'\n');
+    }
+void sys_tick_handler(void){
+    ticks++;
 }
 
