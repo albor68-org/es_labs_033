@@ -1,7 +1,7 @@
 message(CHECK_START "Include FreeRTOS-kernel")
 
 if(NOT FREERTOS_KERNEL_REPOSITORY)
-  set(FREERTOS_KERNEL_REPOSITORY file://${CMAKE_SOURCE_DIR}/FreeRTOS-Kernel)
+  set(FREERTOS_KERNEL_REPOSITORY https://github.com/FreeRTOS/FreeRTOS-Kernel.git)
   message(STATUS "Select default FreeRTOS-kernel repository.")
 endif()
 

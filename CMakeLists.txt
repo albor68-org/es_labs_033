@@ -1,14 +1,15 @@
 #================================================================================
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.20)
 set(CMAKE_TOOLCHAIN_FILE cmake/arm-none-eabi-gcc.cmake)
 
 
 #================================================================================
-project(es_labs_033 LANGUAGES CXX C ASM)
-set(DEVICE stm32f303vc)
+project(pomrs LANGUAGES CXX C ASM)
+set(DEVICE stm32f407vg)
 
 
 include(libopencm3)
+include(freertos_kernel)
 
 
 #================================================================================
