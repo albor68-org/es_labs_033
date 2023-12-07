@@ -9,6 +9,7 @@ int main () {
 
     while (true) {
         gpio_toggle(GPIOD, GPIO15);
+        gpio_toggle(GPIOD, GPIO15);
     }
 
 }
